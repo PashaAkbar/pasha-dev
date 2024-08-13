@@ -4,7 +4,6 @@ const navItems = [
   { name: 'Home', to: 'home' },
   { name: 'Portofolio', to: 'portofolio' },
   { name: 'Experience', to: 'experience' },
-  { name: 'Contact Me', to: 'contact' },
 ]
 
 const NavBar = () => {
