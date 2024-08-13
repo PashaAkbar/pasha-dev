@@ -30,9 +30,6 @@ const Card = ({ className }) => {
         style={{ fontSize: '2em' }}
         repeat={Infinity}
       />
-      <div className='mt-2 card__content '>
-        <p>This is the content inside the card.</p>
-      </div>
     </div>
   )
 }
