@@ -1,7 +1,7 @@
 
 const Tools = () => {
   return (
-    <div className='flex flex-col w-full gap-10 px-10 my-6'>
+    <div name='tools' className='flex flex-col w-full gap-10 px-10 my-6'>
         <div className='flex justify-center w-full py-2 text-4xl text-center'>
             Tools
         </div>
