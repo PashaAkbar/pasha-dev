@@ -19,10 +19,6 @@ const ContactMe = () => {
               pashaakbar52@gmail.com
             </a>
           </p>
-          <p className='text-sm'>
-            Phone:{' '}
-            <a className='text-blue-500 hover:underline'>+62 8560 9744 229</a>
-          </p>
         </div>
       </div>
       <div className='pt-4 mt-24 text-center border-t border-gray-200'>
