@@ -6,7 +6,7 @@ import trivenly from '../assets/trivenly.jpg';
 
 const portfolioItems = [
   {
-    title: 'Arjuna by HRIS Platform CIMB Niaga',
+    title: 'Arjuna HRIS Platform by CIMB Niaga',
     description: `Built frontend features for Arjuna Stage 3 and Stage 4 using React TS based on Figma designs. Developed reusable components, maintained design consistency, integrated REST APIs, and collaborated with backend engineers to ensure smooth data flow across the HRIS platform.`,
     image: null,
     link: '',
