@@ -1,37 +1,7 @@
 import TypeIt from 'typeit-react'
-import gambar from '../assets/home.jpeg'
-import { useSpring, animated } from 'react-spring'
+import ppPicture from '../assets/foto pp.jpg'
 
 const Home = () => {
-  const imageAnimation = useSpring({
-    loop: { reverse: true },
-    from: {
-      transform: 'rotate(-12deg) scale(1.05) translateX(-4px) translateY(4px)',
-    },
-    to: async (next) => {
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        await next({
-          transform:
-            'rotate(-12deg) scale(1.05) translateX(4px) translateY(-4px)',
-        })
-        await next({
-          transform:
-            'rotate(-12deg) scale(1.05) translateX(-4px) translateY(4px)',
-        })
-        await next({
-          transform:
-            'rotate(-12deg) scale(1.05) translateX(-4px) translateY(-4px)',
-        })
-        await next({
-          transform:
-            'rotate(-12deg) scale(1.05) translateX(4px) translateY(4px)',
-        })
-      }
-    },
-    config: { duration: 1800 }, // Adjust the duration as needed
-  })
-
   return (
     <div
       name='home'
@@ -102,13 +72,14 @@ const Home = () => {
             </a>
           </div>
         </div>
-        <div className='p-6 lg:p-20'>
-          <animated.img
-            src={gambar}
-            alt=''
-            className='mx-auto drop-shadow-md rounded-2xl'
-            style={imageAnimation}
-          />
+        <div className='flex items-center justify-center p-6 lg:p-20'>
+          <div className='w-full max-w-sm overflow-hidden border border-gray-200 shadow-sm rounded-2xl'>
+            <img
+              src={ppPicture}
+              alt='Anwaripasha Akbar'
+              className='object-cover w-full aspect-[4/5]'
+            />
+          </div>
         </div>
       </div>
     </div>
