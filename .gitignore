@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Local AI agent tooling; skills-lock.json remains tracked for reproducibility
+.agents/
+.claude/
+agent/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

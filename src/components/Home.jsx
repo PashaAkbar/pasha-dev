@@ -1,57 +1,36 @@
-import TypeIt from 'typeit-react'
-import ppPicture from '../assets/foto pp.jpg'
-
 const Home = () => {
   return (
-    <div
+    <section
       name='home'
-      className='flex items-center justify-around w-full px-10 lg:h-screen'
+      id='home'
+      className='hero section-shell'
     >
-      <div className='flex flex-col w-full gap-10 my-20 lg:grid lg:grid-cols-2 lg:my-0'>
-        <div className='flex flex-col justify-center gap-2 px-6 py-4 bg-white lg:px-20'>
-          <TypeIt
-            className='text-4xl font-bold'
-            options={{
-              strings: 'Anwaripasha Akbar',
-              speed: 120,
-              waitUntilVisible: true,
-            }}
-          />
-          <TypeIt
-            className='mb-3 text-2xl font-semibold '
-            options={{
-              speed: 120,
-              waitUntilVisible: true,
-              loop: true,
-            }}
-            getBeforeInit={(instance) => {
-              instance
-                .type('Software Engineer')
-                .pause(200)
-                .delete()
-                .type('Application Developer')
-                .pause(200)
-                .delete()
-                .type('Web Developer')
-                .go()
-
-              // Remember to return the instance!
-              return instance
-            }}
-          />
-          <p>
-            He like to analyze problem and draw conclusions. He has a creative
-            mind and ideas. He enjoys learning new thing related to web
-            development. He completes repetitive activities with programmatic
-            automation
+      <div className='hero-grid'>
+        <div className='hero-copy'>
+          <p className='eyebrow'>Software engineer · Jakarta</p>
+          <h1>Anwaripasha Akbar</h1>
+          <p className='hero-role'>I build reliable digital products and internal tools.</p>
+          <p className='hero-description'>
+            I turn complex workflows into clear, maintainable web experiences, with a focus on
+            frontend engineering, automation, and thoughtful interface design.
           </p>
-          <div className='flex flex-row gap-4 mt-4'>
+          <div className='hero-actions'>
+            <a className='button button-primary' href='#portfolio'>
+              View selected work <span aria-hidden='true'>↗</span>
+            </a>
+            <a className='button button-secondary' href='mailto:pashaakbar52@gmail.com'>
+              Start a conversation
+            </a>
+          </div>
+          <div className='social-links' aria-label='Social profiles'>
             <a
               href='https://github.com/PashaAkbar'
               target='_blank'
+              rel='noopener noreferrer'
+              aria-label='GitHub profile'
             >
               <svg
-                className='h-14 fill-gray-900 hover:fill-blue-600'
+                className='social-icon'
                 xmlns='http://www.w3.org/2000/svg'
                 viewBox='0 0 24 24'
               >
@@ -61,9 +40,11 @@ const Home = () => {
             <a
               href='https://www.linkedin.com/in/anwaripasha-akbar/'
               target='_blank'
+              rel='noopener noreferrer'
+              aria-label='LinkedIn profile'
             >
               <svg
-                className='h-14 fill-gray-900 hover:fill-blue-600'
+                className='social-icon'
                 xmlns='http://www.w3.org/2000/svg'
                 viewBox='0 0 24 24'
               >
@@ -72,17 +53,19 @@ const Home = () => {
             </a>
           </div>
         </div>
-        <div className='flex items-center justify-center p-6 lg:p-20'>
-          <div className='w-full max-w-sm overflow-hidden border border-gray-200 shadow-sm rounded-2xl'>
-            <img
-              src={ppPicture}
-              alt='Anwaripasha Akbar'
-              className='object-cover w-full aspect-[4/5]'
-            />
+        <div className='hero-visual' aria-label='Areas of focus'>
+          <div className='focus-panel'>
+            <p className='focus-label'>What I bring</p>
+            <div className='focus-list'>
+              <div><strong>01</strong><span>Clear interfaces</span></div>
+              <div><strong>02</strong><span>Reliable systems</span></div>
+              <div><strong>03</strong><span>Useful automation</span></div>
+            </div>
+            <p className='focus-note'>Thoughtful frontend work for products people can depend on.</p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 

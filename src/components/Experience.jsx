@@ -37,27 +37,30 @@ const experiences = [
 
 const Experience = () => {
   return (
-    <div
+    <section
       name='experience'
-      className='flex flex-col items-center justify-center w-full gap-10 px-10 my-14 text-gray-900'
+      id='experience'
+      className='section-shell section-block'
     >
-      <div className='flex justify-center w-full py-2 text-4xl text-center'>
-        Experience
+      <div className='section-heading'>
+        <p className='eyebrow'>The path so far</p>
+        <h2>Experience</h2>
+        <p>Building useful systems with teams that care about the details.</p>
       </div>
-      <ol className='relative border-gray-300 border-s'>
+      <ol className='experience-list'>
         {experiences.map((experience, index) => (
           <li
             key={index}
-            className='mb-10 ms-4'
+            className='experience-item'
           >
-            <div className='absolute w-3 h-3 bg-gray-500 rounded-full mt-1.5 -start-1.5 border border-white'></div>
-            <time className='mb-1 text-sm font-normal leading-none text-gray-500'>
+            <div className='experience-marker' aria-hidden='true'></div>
+            <time dateTime={experience.time} className='experience-time'>
               {experience.time}
             </time>
-            <h3 className='text-lg font-semibold text-gray-900'>
+            <h3 className='experience-title'>
               {experience.title}
             </h3>
-            <ul className='pl-6 text-base font-normal text-gray-600 list-disc'>
+            <ul className='experience-tasks'>
               {experience.tasks.map((task, idx) => (
                 <li key={idx}>{task}</li>
               ))}
@@ -65,7 +68,7 @@ const Experience = () => {
           </li>
         ))}
       </ol>
-    </div>
+    </section>
   )
 }
 

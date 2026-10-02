@@ -9,17 +9,19 @@ import Tools from './components/Tools'
 
 function App() {
   return (
-    <div className='font-myfont'>
+    <div className='site-shell'>
       <NavBar />
-      <Home />
-      <Divider />
-      <Portofolio />
-      <Divider />
-      <Experience />
-      <Divider />
-      <Tools />
-      <Divider />
-      <ContactMe />
+      <main>
+        <Home />
+        <Divider />
+        <Portofolio />
+        <Divider />
+        <Experience />
+        <Divider />
+        <Tools />
+        <Divider />
+        <ContactMe />
+      </main>
     </div>
   )
 }

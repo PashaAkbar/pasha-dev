@@ -1,6 +1,5 @@
 import ma from '../assets/metrodata-academy.png'
 import maAdmin from '../assets/metrodata-admin.png'
-import akbPicture from '../assets/akbar-picture.png'
 import ipp from '../assets/injeksi-plastik-pasifik.jpg';
 import trivenly from '../assets/trivenly.jpg';
 
@@ -12,6 +11,7 @@ const portfolioItems = [
     link: '',
     reverse: true,
     confidential: true,
+    tags: ['React', 'TypeScript', 'REST API'],
   },
   {
     title: 'Digisales by BNI',
@@ -20,6 +20,7 @@ const portfolioItems = [
     link: '',
     reverse: false,
     confidential: true,
+    tags: ['Vue.js', 'Privacy', 'UAT'],
   },
   {
     title: 'Supply Chain Management Dashboard for Pasifik Plastic Injection',
@@ -27,6 +28,7 @@ const portfolioItems = [
     image: ipp,
     link: '',
     reverse: true,
+    tags: ['Dashboard', 'Supply chain', 'Operations'],
   },
   {
     title: 'Trivenly',
@@ -34,6 +36,7 @@ const portfolioItems = [
     image: trivenly,
     link: '',
     reverse: false,
+    tags: ['Astro', 'Vue.js', 'API integration'],
   },
   {
     title: 'Metrodata Academy',
@@ -43,8 +46,9 @@ const portfolioItems = [
       partnerships. The landing page also highlights various Metrodata programs.
       Metrodata Training, Metrodata Internship, Metrodata IT Camp and Metrodata Mengajar.`,
     image: ma,
-    link: 'https://metrodataacademy.id/',
+    link: 'https://metrodataacademy.id',
     reverse: true,
+    tags: ['React', 'Next.js', 'Tailwind'],
   },
   {
     title: 'Metrodata Academy Management System',
@@ -54,72 +58,71 @@ const portfolioItems = [
     image: maAdmin,
     link: '',
     reverse: false,
-  },
-  {
-    title: 'Akbar Picture',
-    description: `A portfolio website for a wedding photography business. Created an
-      elegant and user-friendly web portfolio to highlight and showcase the wedding
-      photography services offered by Akbar Picture.`,
-    image: akbPicture,
-    link: 'https://akbarpicture.netlify.app/',
-    reverse: true,
+    tags: ['React', 'Redux', 'Internal tools'],
   },
 ];
 
+const orderedPortfolioItems = [...portfolioItems].sort(
+  (firstProject, secondProject) => Number(Boolean(firstProject.confidential)) - Number(Boolean(secondProject.confidential)),
+)
+
 const Portofolio = () => {
   return (
-    <div
-      name='portofolio'
-      className='flex flex-col w-full gap-10 px-10 my-3'
+    <section
+      name='portfolio'
+      id='portfolio'
+      className='section-shell section-block'
     >
-      <div className='flex justify-center w-full py-2 text-4xl text-center'>
-        Portofolio
+      <div className='section-heading'>
+        <p className='eyebrow'>Selected work</p>
+        <h2>Portfolio</h2>
+        <p>Products and platforms built across HRIS, fintech, operations, and the web.</p>
       </div>
-      {portfolioItems.map((item, index) => (
+      <div className='portfolio-list'>
+      {orderedPortfolioItems.map((item, index) => (
         <section
           key={index}
-          className={`flex flex-col w-full gap-4 lg:flex-row ${
-            item.reverse ? 'lg:flex-row-reverse' : ''
+          className={`portfolio-item ${
+            item.reverse ? 'is-reversed' : ''
           }`}
         >
-          <div className='flex flex-col items-end w-full gap-4 lg:pt-4 lg:px-12 text-end'>
+          <div className='portfolio-copy'>
+            <p className='project-index'>{String(index + 1).padStart(2, '0')}</p>
             {item.link ? (
               <a
                 target='_blank'
                 rel='noopener noreferrer'
                 href={item.link}
-                className='text-xl font-extrabold lg:text-2xl'
+                className='project-title project-link'
               >
                 {item.title}
               </a>
             ) : (
-              <p className='text-xl font-extrabold lg:text-2xl'>{item.title}</p>
+              <h3 className='project-title'>{item.title}</h3>
             )}
-            <p className='text-sm lg:text-lg'>{item.description}</p>
+            <p className='project-description'>{item.description}</p>
+            <div className='tag-list' aria-label={`${item.title} technologies`}>
+              {item.tags.map((tag) => <span key={tag}>{tag}</span>)}
+            </div>
           </div>
           {item.image ? (
-            <a
-              target='_blank'
-              rel='noopener noreferrer'
-              href={item.link || '#'}
-              className='w-full lg:max-w-[400px]'
-            >
+            item.link ? <a target='_blank' rel='noopener noreferrer' href={item.link} className='project-media'>
               <img
                 src={item.image}
                 alt={item.title}
-                className='mx-auto rounded-2xl drop-shadow-md'
+                className='project-image'
               />
-            </a>
+            </a> : <div className='project-media'><img src={item.image} alt={item.title} className='project-image' /></div>
           ) : (
-            <div className='flex items-center justify-center w-full min-h-48 px-8 py-10 text-center border border-gray-200 lg:max-w-[400px] rounded-2xl bg-gray-50 drop-shadow-md'>
-              <p className='text-sm font-semibold tracking-wide text-gray-500 uppercase'>
-                Confidential Project
-              </p>
+            <div className='project-media confidential-media'>
+              <span className='confidential-mark' aria-hidden='true'>✦</span>
+              <p>Confidential project<br /><small>Details available in conversation</small></p>
             </div>
           )}
         </section>
       ))}
-    </div>
+      </div>
+    </section>
   )
 }
 

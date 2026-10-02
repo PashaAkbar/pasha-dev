@@ -1,32 +1,68 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-scroll'
 
 const navItems = [
   { name: 'Home', to: 'home' },
-  { name: 'Portofolio', to: 'portofolio' },
+  { name: 'Portfolio', to: 'portfolio' },
   { name: 'Experience', to: 'experience' },
   { name: 'Tools', to: 'tools' },
+  { name: 'Contact', to: 'contact' },
 ]
 
 const NavBar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  useEffect(() => {
+    const closeMenu = () => setIsMenuOpen(false)
+    window.addEventListener('resize', closeMenu)
+    return () => window.removeEventListener('resize', closeMenu)
+  }, [])
+
   return (
-    <div className='fixed top-0 left-0 z-50 flex justify-between w-full px-10 py-3 bg-white'>
-      <div className='font-semibold cursor-pointer text-slate-800'>
-        Pasha.dev
-      </div>
-      <div className='items-center justify-center hidden w-full grid-cols-4 gap-2 text-center md:grid e max-w-[500px]'>
-        {navItems.map((item, index) => (
+    <header className='site-nav'>
+      <div className='site-container nav-inner'>
+        <Link
+          to='home'
+          smooth
+          duration={500}
+          className='brand-mark'
+          aria-label='Back to home'
+          onClick={() => setIsMenuOpen(false)}
+        >
+          Pasha<span>.dev</span>
+        </Link>
+        <button
+          type='button'
+          className='menu-toggle'
+          aria-expanded={isMenuOpen}
+          aria-controls='primary-navigation'
+          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          onClick={() => setIsMenuOpen((open) => !open)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+        <nav
+          id='primary-navigation'
+          className={`primary-navigation ${isMenuOpen ? 'is-open' : ''}`}
+          aria-label='Primary navigation'
+        >
+          {navItems.map((item) => (
           <Link
-            key={index}
+            key={item.to}
             to={item.to}
             smooth={true}
             duration={500}
-            className='cursor-pointer'
+            className='nav-link'
+            onClick={() => setIsMenuOpen(false)}
           >
             {item.name}
           </Link>
-        ))}
+          ))}
+        </nav>
       </div>
-    </div>
+    </header>
   )
 }
 
