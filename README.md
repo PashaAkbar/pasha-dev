@@ -1,63 +1,41 @@
-# Pasha.dev
+# 🪐 Anwaripasha Akbar — 3D Planetary Portfolio
 
-Personal portfolio website for Anwaripasha Akbar, a software engineer based in Jakarta. The site highlights selected work, professional experience, engineering tools, and contact information.
+An interactive 3D celestial portfolio featuring an authentic **Monochrome Dot Earth**, high-resolution NASA specular landmask mapping, and a **Planetary Click Navigation System**.
 
-## Built With
+Built with **React 18**, **Three.js**, and **Vite**, featuring all projects, professional experience, engineering toolkit, and media assets from `pasha-dev`.
 
-- React 18
-- Vite
-- Tailwind CSS
-- React Scroll
-- ESLint
+---
 
-## Features
+## 🌟 The Planetary Architecture
 
-- Responsive layout for desktop and mobile
-- Mobile navigation with accessible controls
-- Portfolio projects with confidential-project states
-- Experience timeline
-- Professional technology toolkit
-- Reduced-motion and reduced-transparency support
-- Keyboard focus states and accessible social links
-- GitHub Pages deployment support
+| Celestial Body | Section | Description |
+| :--- | :--- | :--- |
+| **SOL // NEXUS** | Overview & Hero | Identity, core philosophy, and engineering pillars. |
+| **TERRA // EARTH** | About & Jakarta Hub | Authentic monochrome point-cloud Earth globe with Jakarta operational base beacon and global flight arcs. |
+| **ARES // MARS** | Selected Portfolio | 6 products across Banking HRIS (CIMB Niaga), Fintech Privacy (BNI), Manufacturing SCM, Consumer Web (Trivenly), and EdTech (Metrodata). |
+| **JOVIAN // JUPITER** | Working Toolkit | Production tech stack: React, TypeScript, Next.js, Vue.js, Tailwind CSS, Redux, Git, and APIs. |
+| **CHRONOS // SATURN** | Career Trajectory | Ringed celestial timeline detailing roles at CIMB Niaga, Bank BNI, Metrodata Electronics, and Governor Office. |
+| **BEACON // NEPTUNE** | Transmissions & Contact | Direct contact channel (`pashaakbar52@gmail.com`), GitHub (`@PashaAkbar`), and LinkedIn profiles. |
 
-## Getting Started
+---
 
-Requirements: Node.js 18 or newer and npm.
+## 🌍 The Monochrome Dot Earth
+
+- **High-Resolution NASA Specular Map**: Sampled at 48,000 Fibonacci sphere coordinates, rendering genuine continental coastlines (Indonesia, Japan, UK, Europe, Americas, Africa, Australia, Antarctica).
+- **Jakarta Operational Beacon**: Highlighted with coordinates `-6.2088° S, 106.8456° E`, animated pulsating ripple rings, and an atmospheric beacon beam.
+- **Global Financial Arcs**: Elevated 3D quadratic bezier arcs with animated photon pulses connecting Jakarta to Tokyo, Singapore, London, New York, San Francisco, and Sydney.
+
+---
+
+## 🚀 Running the App
 
 ```bash
-npm install
 npm run dev
 ```
 
-Open the local URL shown by Vite, usually `http://localhost:5173`.
+Open [`http://localhost:3000`](http://localhost:3000) in your browser.
 
-## Available Scripts
-
-```bash
-npm run dev       # Start the development server
-npm run lint      # Run ESLint
-npm run build     # Create a production build
-npm run preview   # Preview the production build locally
-```
-
-## Project Structure
-
-```text
-src/
-├── assets/          # Portfolio and project imagery
-├── components/      # Page sections and reusable UI pieces
-├── App.jsx          # Page composition
-├── index.css        # Global design system and responsive styles
-└── main.jsx         # React entry point
-```
-
-## Deployment
-
-The project includes a GitHub Actions workflow for GitHub Pages. Set `GITHUB_PAGES=true` when building for the repository base path:
-
-```bash
-GITHUB_PAGES=true npm run build
-```
-
-The project-specific `apple-design` skill is tracked through `skills-lock.json`. Its local agent files are intentionally ignored by Git.
+- **Click any planet** in the 3D space or via the bottom dock to zoom in and inspect that section.
+- **Drag to orbit** and inspect celestial bodies from any angle.
+- **Scroll to zoom** in and out.
+- **Click "ORBIT OVERVIEW"** at the top right to pull back to the full solar system view.
