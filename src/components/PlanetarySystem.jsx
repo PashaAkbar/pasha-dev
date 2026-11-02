@@ -445,10 +445,10 @@ export default function PlanetarySystem({
       map[cfg.id] = { group, hit, config: cfg };
     });
 
-    // ─── EARTH: Loose & Airy Dots, Reversed Palette (Ocean Translucent, Land Dark Silhouette) ───
+    // ─── EARTH: Bright Land Continents over Faint Ocean Dots (islands clearly visible) ───
     const ER = PLANETS.find((p) => p.id === 'earth').size;
     const eGroup = map.earth.group;
-    const NE = 12000; // Airy & loose spacing
+    const NE = 20000; // Dense enough for readable coastlines, still airy
     const ePos = new Float32Array(NE * 3);
     const eCol = new Float32Array(NE * 3);
 
@@ -459,9 +459,9 @@ export default function PlanetarySystem({
       ePos[i * 3] = Math.cos(th) * rY * ER;
       ePos[i * 3 + 1] = y * ER;
       ePos[i * 3 + 2] = Math.sin(th) * rY * ER;
-      eCol[i * 3] = 0.02;
-      eCol[i * 3 + 1] = 0.02;
-      eCol[i * 3 + 2] = 0.02;
+      eCol[i * 3] = 0.12;
+      eCol[i * 3 + 1] = 0.12;
+      eCol[i * 3 + 2] = 0.14;
     }
 
     const eGeo = new THREE.BufferGeometry();
@@ -483,7 +483,7 @@ export default function PlanetarySystem({
     );
     eGroup.rotation.z = 0.41;
 
-    loadEarthLandMask('/earth-specular.jpg').then((md) => {
+    loadEarthLandMask().then((md) => {
       if (!md) return;
       const pA = eGeo.getAttribute('position');
       const cA = eGeo.getAttribute('color');
@@ -499,13 +499,13 @@ export default function PlanetarySystem({
         const v = (90 - lat) / 180;
 
         if (isLandAt(u, v, md)) {
-          // Land: dark silhouette / negative space
-          pA.setXYZ(i, x * ER * 0.997, y * ER * 0.997, z * ER * 0.997);
-          cA.setXYZ(i, 0.01, 0.01, 0.015);
+          // Land: bright dots forming visible continents & islands
+          pA.setXYZ(i, x * ER, y * ER, z * ER);
+          cA.setXYZ(i, 0.93, 0.93, 0.95);
         } else {
-          // Ocean: transparent, faint, airy dots
-          pA.setXYZ(i, x * ER * 1.002, y * ER * 1.002, z * ER * 1.002);
-          cA.setXYZ(i, 0.20, 0.21, 0.24);
+          // Ocean: faint airy dots, slightly inset
+          pA.setXYZ(i, x * ER * 0.996, y * ER * 0.996, z * ER * 0.996);
+          cA.setXYZ(i, 0.10, 0.105, 0.12);
         }
       }
       pA.needsUpdate = true;
