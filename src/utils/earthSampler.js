@@ -55,6 +55,7 @@ export function isLandAt(u, v, mapData) {
   const px = Math.min(mapData.width - 1, Math.max(0, Math.floor(u * mapData.width)));
   const py = Math.min(mapData.height - 1, Math.max(0, Math.floor(v * mapData.height)));
   const index = (py * mapData.width + px) * 4;
-  // Red channel brightness (in specular map, land is white/gray, ocean is black)
-  return mapData.data[index] > 38;
+  // In the NASA specular map water reflects light (bright) and land is dark,
+  // so land = dark pixels, ocean = bright pixels.
+  return mapData.data[index] < 38;
 }
