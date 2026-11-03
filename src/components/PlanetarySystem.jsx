@@ -499,13 +499,13 @@ export default function PlanetarySystem({
         const v = (90 - lat) / 180;
 
         if (isLandAt(u, v, md)) {
-          // Land: bright dots forming visible continents & islands
+          // Land: bright white dots forming visible continents & islands
           pA.setXYZ(i, x * ER, y * ER, z * ER);
-          cA.setXYZ(i, 0.93, 0.93, 0.95);
+          cA.setXYZ(i, 0.95, 0.95, 0.97);
         } else {
-          // Ocean: faint airy dots, slightly inset
+          // Ocean: black transparent (invisible with additive blending)
           pA.setXYZ(i, x * ER * 0.996, y * ER * 0.996, z * ER * 0.996);
-          cA.setXYZ(i, 0.10, 0.105, 0.12);
+          cA.setXYZ(i, 0, 0, 0);
         }
       }
       pA.needsUpdate = true;
