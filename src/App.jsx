@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PlanetarySystem from './components/PlanetarySystem';
 import { PLANETS, PERSONAL_INFO, PROJECTS, TOOLS, EXPERIENCES } from './data/portfolioData';
 import { GithubIcon, LinkedinIcon } from './components/SocialIcons';
@@ -489,8 +489,16 @@ function SectionContent({ id, onNav }) {
 
 export default function App() {
   const [active, setActive] = useState('earth'); // Default to earth
-  const [panelOpen, setPanelOpen] = useState(true);
+  const [panelOpen, setPanelOpen] = useState(() => !window.matchMedia('(max-width: 768px)').matches);
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 768px)').matches);
   const planet = PLANETS.find((p) => p.id === active) || PLANETS[1];
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    const onChange = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   const isDetail = active !== 'sun';
 
@@ -521,11 +529,11 @@ export default function App() {
           zIndex: 20,
         }}
       >
-        <div style={{ pointerEvents: 'auto', cursor: 'pointer' }} onClick={() => setActive('sun')}>
-          <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.08em', color: '#eee' }}>
+        <div style={{ pointerEvents: 'auto', cursor: 'pointer', maxWidth: isMobile ? '48vw' : undefined }} onClick={() => setActive('sun')}>
+          <div style={{ fontSize: isMobile ? 11 : 12, fontWeight: 800, letterSpacing: '0.08em', color: '#eee', whiteSpace: 'nowrap' }}>
             ANWARIPASHA AKBAR
           </div>
-          <div style={{ fontSize: 10, color: '#666' }}>
+          <div style={{ fontSize: isMobile ? 8 : 10, color: '#666', whiteSpace: 'nowrap' }}>
             SOFTWARE ENGINEER · PLANETARY PORTFOLIO
           </div>
         </div>
@@ -535,14 +543,15 @@ export default function App() {
             href="#/starwars"
             style={{
               pointerEvents: 'auto',
-              padding: '6px 14px',
+              padding: isMobile ? '5px 8px' : '6px 14px',
               background: 'rgba(10, 10, 10, 0.85)',
               border: '1px solid #222',
               borderRadius: 6,
               color: '#FFE81F',
-              fontSize: 10,
+              fontSize: isMobile ? 8 : 10,
               cursor: 'pointer',
               textDecoration: 'none',
+              whiteSpace: 'nowrap',
               transition: 'all 0.15s ease',
             }}
           >
@@ -552,13 +561,14 @@ export default function App() {
             onClick={() => setActive('sun')}
             style={{
               pointerEvents: 'auto',
-              padding: '6px 14px',
+              padding: isMobile ? '5px 8px' : '6px 14px',
               background: 'rgba(10, 10, 10, 0.85)',
               border: active === 'sun' ? '1px solid #666' : '1px solid #222',
               borderRadius: 6,
               color: active === 'sun' ? '#fff' : '#888',
-              fontSize: 10,
+              fontSize: isMobile ? 8 : 10,
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
               transition: 'all 0.15s ease',
             }}
           >
@@ -567,19 +577,20 @@ export default function App() {
         </div>
       </div>
 
-      {/* Side Information Panel: Exact 50% screen split (calc(50vw - 28px)), leaving 50% for planet */}
+      {/* Side Information Panel: 50% split on desktop, full-width sheet above the dock on mobile */}
       {panelOpen && (
         <aside
           style={{
             position: 'absolute',
             top: '64px',
-            bottom: '72px',
-            right: '20px',
-            width: isDetail ? 'calc(50vw - 28px)' : '480px',
-            maxWidth: isDetail ? 'none' : '480px',
-            minWidth: '320px',
+            bottom: isMobile ? '88px' : '72px',
+            right: isMobile ? '12px' : '20px',
+            left: isMobile ? '12px' : 'auto',
+            width: isMobile ? 'auto' : isDetail ? 'calc(50vw - 28px)' : '480px',
+            maxWidth: isDetail || isMobile ? 'none' : '480px',
+            minWidth: isMobile ? 0 : '320px',
             overflowY: 'auto',
-            padding: '24px 28px',
+            padding: isMobile ? '18px 20px' : '24px 28px',
             background: 'rgba(5, 5, 5, 0.88)',
             border: '1px solid #1c1c1c',
             borderRadius: 14,
@@ -620,8 +631,8 @@ export default function App() {
           onClick={() => setPanelOpen(true)}
           style={{
             position: 'absolute',
-            bottom: '72px',
-            right: '20px',
+            bottom: isMobile ? '88px' : '72px',
+            right: isMobile ? '12px' : '20px',
             padding: '8px 16px',
             background: 'rgba(10, 10, 10, 0.9)',
             border: '1px solid #333',
@@ -638,20 +649,21 @@ export default function App() {
 
       {/* Bottom Planet Dock */}
       <nav
+        className="planet-dock"
         style={{
           position: 'absolute',
           bottom: '16px',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
-          gap: 6,
-          padding: '6px 10px',
+          gap: isMobile ? 4 : 6,
+          padding: isMobile ? '5px 6px' : '6px 10px',
           background: 'rgba(5, 5, 5, 0.88)',
           border: '1px solid #1a1a1a',
           borderRadius: 12,
           zIndex: 20,
           backdropFilter: 'blur(12px)',
-          maxWidth: 'calc(100vw - 32px)',
+          maxWidth: 'calc(100vw - 24px)',
           overflowX: 'auto',
         }}
       >
@@ -665,12 +677,12 @@ export default function App() {
                 setPanelOpen(true);
               }}
               style={{
-                padding: '6px 14px',
+                padding: isMobile ? '6px 9px' : '6px 14px',
                 borderRadius: 8,
                 border: isSelected ? '1px solid #555' : '1px solid transparent',
                 background: isSelected ? '#161616' : 'transparent',
                 color: isSelected ? '#eee' : '#666',
-                fontSize: 11,
+                fontSize: isMobile ? 10 : 11,
                 cursor: 'pointer',
                 fontWeight: isSelected ? 700 : 400,
                 whiteSpace: 'nowrap',

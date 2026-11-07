@@ -48,6 +48,14 @@ body {
   border-radius: 2px;
 }
 
+/* Planet dock: scrollable on small screens without a visible scrollbar */
+.planet-dock {
+  scrollbar-width: none;
+}
+.planet-dock::-webkit-scrollbar {
+  display: none;
+}
+
 /* Range input styling */
 input[type="range"] {
   accent-color: #ffffff;

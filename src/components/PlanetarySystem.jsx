@@ -32,6 +32,7 @@ export default function PlanetarySystem({
     renderer.setSize(el.clientWidth, el.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 1);
+    renderer.domElement.style.touchAction = 'none'; // let touch drag orbit instead of scrolling
     el.appendChild(renderer.domElement);
 
     // Soft round dot texture
@@ -525,7 +526,14 @@ export default function PlanetarySystem({
     const lookAt = new THREE.Vector3();
     const hits = Object.values(map).map((p) => p.hit);
 
+    const setMouseFromEvent = (e) => {
+      const r = renderer.domElement.getBoundingClientRect();
+      mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    };
+
     const onDown = (e) => {
+      setHovered(null);
+      setMouseFromEvent(e); // taps never fire a preceding pointermove
       drag = true;
       prev = { x: e.clientX, y: e.clientY };
       dTime = performance.now();
@@ -533,24 +541,29 @@ export default function PlanetarySystem({
     };
 
     const onMove = (e) => {
-      const r = renderer.domElement.getBoundingClientRect();
-      mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-
       if (drag) {
         orbitA -= (e.clientX - prev.x) * 0.005;
         pitch = Math.max(0.05, Math.min(1.4, pitch - (e.clientY - prev.y) * 0.004));
         prev = { x: e.clientX, y: e.clientY };
-      } else {
-        rc.setFromCamera(mouse, camera);
-        const h = rc.intersectObjects(hits);
-        setHovered(h.length ? PLANETS.find((p) => p.id === h[0].object.userData.planetId) : null);
-        el.style.cursor = h.length ? 'pointer' : 'default';
+        return;
       }
+      // ignore hover raycasts that start over UI overlays
+      if (e.target !== renderer.domElement) {
+        setHovered(null);
+        el.style.cursor = 'default';
+        return;
+      }
+      setMouseFromEvent(e);
+      rc.setFromCamera(mouse, camera);
+      const h = rc.intersectObjects(hits);
+      setHovered(h.length ? PLANETS.find((p) => p.id === h[0].object.userData.planetId) : null);
+      el.style.cursor = h.length ? 'pointer' : 'default';
     };
 
     const onUp = (e) => {
       drag = false;
       if (Math.hypot(e.clientX - dPos.x, e.clientY - dPos.y) < 5 && performance.now() - dTime < 300) {
+        setMouseFromEvent(e); // use the release point, not the last hover position
         rc.setFromCamera(mouse, camera);
         const h = rc.intersectObjects(hits);
         if (h.length) onSelectPlanet(h[0].object.userData.planetId);
@@ -611,9 +624,10 @@ export default function PlanetarySystem({
 
       eGroup.rotation.y += 0.002;
 
-      // ─── Camera 50% / 50% Framing ───
+      // ─── Camera Framing: 50/50 split on desktop, planet above the sheet on mobile ───
       const id = activeRef.current;
       const isDetail = detailOpenRef.current && id !== 'sun';
+      const narrow = el.clientWidth < 768;
       let tP = new THREE.Vector3();
       let tL = new THREE.Vector3();
 
@@ -631,16 +645,22 @@ export default function PlanetarySystem({
           const wp = new THREE.Vector3();
           o.group.getWorldPosition(wp);
 
-          const fd = id === 'earth' ? o.config.size * 3.4 : o.config.size * 3.8;
+          const fd = (id === 'earth' ? o.config.size * 3.4 : o.config.size * 3.8) * (narrow ? 1.3 : 1);
 
           // Camera offset: position camera in front of the planet
           tP.copy(wp).add(new THREE.Vector3(0, fd * 0.25, fd));
 
           if (isDetail) {
-            // 50% / 50% Split Screen:
-            // Center the planet in the LEFT 50% of the screen by shifting lookAt to the right
-            // by approx 25% of visible frustum width (~fd * 0.26)
-            tL.copy(wp).add(new THREE.Vector3(fd * 0.26, 0, 0));
+            if (narrow) {
+              // Mobile: the panel covers the lower screen — look below the planet
+              // so it sits in the upper half
+              tL.copy(wp).add(new THREE.Vector3(0, -fd * 0.3, 0));
+            } else {
+              // 50% / 50% Split Screen:
+              // Center the planet in the LEFT 50% of the screen by shifting lookAt to the right
+              // by approx 25% of visible frustum width (~fd * 0.26)
+              tL.copy(wp).add(new THREE.Vector3(fd * 0.26, 0, 0));
+            }
           } else {
             tL.copy(wp);
           }
