@@ -237,11 +237,11 @@
 }
 
 .sw-mando {
-  width: clamp(230px, 32vw, 340px);
+  width: clamp(280px, 38vw, 420px);
   filter: drop-shadow(0 0 30px rgba(207, 211, 216, 0.18));
 }
 
-/* Dotted stroke look: round dashes = marching dots */
+/* Dotted stroke look: round dashes = static dots */
 .sw-dots path,
 .sw-dots ellipse,
 .sw-dots circle,
@@ -254,12 +254,18 @@
   stroke-dasharray: 0.1 6;
   opacity: 0;
   transition: opacity 0.8s ease;
-  animation: dots-march 26s linear infinite;
 }
 
 /* Bolder dot line for accents like the T-visor */
 .sw-dots .sw-bold {
   stroke-width: 4.4;
+}
+
+/* The visor T: dotted outline, slightly bolder than the rest */
+.sw-dots .sw-visor {
+  fill: none;
+  stroke-width: 3.4;
+  stroke-dasharray: 0.1 5.4;
 }
 
 /* A few solid accents (pupils, nose) stay filled */
@@ -274,11 +280,6 @@
 .sw-section.in-view .sw-dots circle,
 .sw-section.in-view .sw-dots rect {
   opacity: 1;
-}
-
-/* Dots march slowly along every line to keep the art alive */
-@keyframes dots-march {
-  to { stroke-dashoffset: -710; }
 }
 
 /* Paths appear one after another, like being hand-drawn */
@@ -310,6 +311,18 @@
 .sw-dots > :nth-child(26) { transition-delay: 2.6s; }
 .sw-dots > :nth-child(27) { transition-delay: 2.7s; }
 .sw-dots > :nth-child(28) { transition-delay: 2.8s; }
+.sw-dots > :nth-child(29) { transition-delay: 2.9s; }
+.sw-dots > :nth-child(30) { transition-delay: 3s; }
+.sw-dots > :nth-child(31) { transition-delay: 3.1s; }
+.sw-dots > :nth-child(32) { transition-delay: 3.2s; }
+.sw-dots > :nth-child(33) { transition-delay: 3.3s; }
+.sw-dots > :nth-child(34) { transition-delay: 3.4s; }
+.sw-dots > :nth-child(35) { transition-delay: 3.5s; }
+.sw-dots > :nth-child(36) { transition-delay: 3.6s; }
+.sw-dots > :nth-child(37) { transition-delay: 3.7s; }
+.sw-dots > :nth-child(38) { transition-delay: 3.8s; }
+.sw-dots > :nth-child(39) { transition-delay: 3.9s; }
+.sw-dots > :nth-child(40) { transition-delay: 4s; }
 
 .sw-grogu-arm {
   transform-box: fill-box;

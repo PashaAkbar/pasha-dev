@@ -63,49 +63,54 @@ function Grogu() {
   );
 }
 
-// ─── MANDALORIAN: dot-art bust with helmet, beskar plates and cape ───
+// ─── MANDALORIAN: dot-art bust cradling Grogu, after the reference art ───
 function Mandalorian() {
   return (
-    <svg className="sw-mando sw-dots" viewBox="0 0 240 340" aria-label="Mandalorian, dot art">
-      {/* helmet: wide dome tapering to the jaw */}
-      <path d="M76 118 Q74 74 96 52 Q120 40 144 52 Q166 74 164 118 Q166 138 150 146 Q120 155 90 146 Q74 138 76 118 Z" />
-      {/* brow ridge */}
-      <path d="M92 82 Q120 74 148 82" />
-      {/* T-visor (bolder dots) */}
-      <path className="sw-bold" d="M120 68 L120 102" />
-      <path className="sw-bold" d="M86 100 Q120 114 154 100" />
-      {/* neck cowl */}
-      <path d="M100 150 L100 162 Q120 170 140 162 L140 150" />
+    <svg className="sw-mando sw-dots" viewBox="0 0 320 400" aria-label="Mandalorian holding Grogu, dot art">
+      {/* cape flowing behind */}
+      <path d="M52 224 Q16 300 24 380" />
+      <path d="M208 224 Q254 300 246 380" />
+      <path d="M24 380 Q135 398 246 382" />
+
+      {/* helmet: wide squat dome */}
+      <path d="M64 116 Q60 64 96 46 Q130 34 164 46 Q200 64 196 116 Q198 142 182 154 Q130 170 78 154 Q62 142 64 116 Z" />
+      {/* top ridge */}
+      <path d="M124 40 Q130 30 136 40" />
+      {/* T-visor: eye band on top, stem down to the chin */}
+      <path
+        className="sw-visor"
+        d="M74 90 Q135 80 196 90 L192 108 Q160 114 142 114 L142 148 Q130 152 118 148 L118 114 Q100 114 78 108 Z"
+      />
+      {/* neck seal */}
+      <path d="M108 166 L108 178 Q130 188 152 178 L152 166" />
+
       {/* pauldrons */}
-      <path d="M96 166 Q58 168 44 190 Q60 202 94 196 Z" />
-      <path d="M144 166 Q182 168 196 190 Q180 202 146 196 Z" />
-      {/* chest plate */}
-      <path d="M96 172 L144 172 L150 226 Q120 238 90 226 Z" />
-      <path d="M120 172 L120 232" />
-      <path d="M102 172 Q120 182 138 172" />
-      {/* abdomen plate */}
-      <path d="M92 232 L148 232 L146 250 Q120 258 94 250 Z" />
-      {/* belt + buckle */}
-      <path d="M90 254 L150 254" />
-      <rect x="116" y="256" width="14" height="10" rx="2" />
-      {/* arms + gauntlet cuffs + fists */}
-      <path d="M46 194 Q30 226 38 268" />
-      <path d="M66 200 Q56 234 60 264" />
-      <path d="M38 250 Q52 258 66 250" />
-      <circle cx="44" cy="282" r="11" />
-      <path d="M194 194 Q210 226 202 268" />
-      <path d="M174 200 Q184 234 180 264" />
-      <path d="M202 250 Q188 258 174 250" />
-      <circle cx="196" cy="282" r="11" />
-      {/* legs */}
-      <path d="M100 262 L98 316" />
-      <path d="M116 262 L116 316" />
-      <path d="M124 262 L124 316" />
-      <path d="M140 262 L142 316" />
-      {/* cape flowing wide behind */}
-      <path d="M52 190 Q14 260 18 326" />
-      <path d="M188 190 Q226 260 222 326" />
-      <path d="M18 326 Q120 340 222 326" />
+      <path d="M104 190 Q64 192 48 222 Q70 242 108 234 Z" />
+      <path d="M156 190 Q196 192 212 222 Q190 242 152 234 Z" />
+
+      {/* chest + abdomen plates */}
+      <path d="M108 190 L152 190 L158 258 Q130 270 102 258 Z" />
+      <path d="M130 190 L130 264" />
+      <path d="M104 262 L156 262 L152 290 Q130 298 108 290 Z" />
+
+      {/* Grogu in the crook of the arm */}
+      <ellipse cx="186" cy="202" rx="40" ry="32" />
+      <path d="M148 192 Q112 182 100 206 Q126 206 150 216 Z" />
+      <path d="M224 192 Q260 182 272 206 Q246 206 222 216 Z" />
+      <circle className="sw-dots-solid" cx="172" cy="200" r="5" />
+      <circle className="sw-dots-solid" cx="198" cy="200" r="5" />
+      <path d="M180 218 Q186 222 192 218" />
+      {/* swaddle wrap */}
+      <path d="M148 228 Q138 254 148 276 L224 276 Q234 250 222 228 Q186 242 148 228 Z" />
+      <circle cx="212" cy="244" r="6" />
+
+      {/* arms cradling the child */}
+      <path d="M62 222 Q88 262 130 280" />
+      <path d="M92 230 Q106 254 126 266" />
+      <path d="M114 272 Q130 282 146 280" />
+      <path d="M208 222 Q204 272 152 288" />
+      <path d="M186 230 Q180 258 156 274" />
+      <path d="M168 278 Q152 286 138 284" />
     </svg>
   );
 }
