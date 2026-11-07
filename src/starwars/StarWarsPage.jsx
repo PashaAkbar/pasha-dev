@@ -104,10 +104,10 @@ function Mandalorian() {
       <path d="M148 228 Q138 254 148 276 L224 276 Q234 250 222 228 Q186 242 148 228 Z" />
       <circle cx="212" cy="244" r="6" />
 
-      {/* left arm cradling the child */}
-      <path d="M62 222 Q90 264 140 282" />
-      <path d="M92 230 Q106 254 126 266" />
-      <path d="M120 274 Q138 284 154 280" />
+      {/* left arm in a ready, slightly angled cradle — bent elbow, raised forearm */}
+      <path d="M60 220 Q78 254 96 270 Q122 286 152 278" />
+      <path d="M88 228 Q100 250 116 262 Q132 270 148 266" />
+      <path d="M134 268 Q146 276 158 270" />
 
       {/* right arm holding the blaster down at the side */}
       <path d="M208 222 Q234 260 236 302" />
