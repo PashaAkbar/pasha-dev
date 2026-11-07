@@ -530,22 +530,41 @@ export default function App() {
           </div>
         </div>
 
-        <button
-          onClick={() => setActive('sun')}
-          style={{
-            pointerEvents: 'auto',
-            padding: '6px 14px',
-            background: 'rgba(10, 10, 10, 0.85)',
-            border: active === 'sun' ? '1px solid #666' : '1px solid #222',
-            borderRadius: 6,
-            color: active === 'sun' ? '#fff' : '#888',
-            fontSize: 10,
-            cursor: 'pointer',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          ORBIT OVERVIEW
-        </button>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <a
+            href="#/starwars"
+            style={{
+              pointerEvents: 'auto',
+              padding: '6px 14px',
+              background: 'rgba(10, 10, 10, 0.85)',
+              border: '1px solid #222',
+              borderRadius: 6,
+              color: '#FFE81F',
+              fontSize: 10,
+              cursor: 'pointer',
+              textDecoration: 'none',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            ★ STAR WARS
+          </a>
+          <button
+            onClick={() => setActive('sun')}
+            style={{
+              pointerEvents: 'auto',
+              padding: '6px 14px',
+              background: 'rgba(10, 10, 10, 0.85)',
+              border: active === 'sun' ? '1px solid #666' : '1px solid #222',
+              borderRadius: 6,
+              color: active === 'sun' ? '#fff' : '#888',
+              fontSize: 10,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            ORBIT OVERVIEW
+          </button>
+        </div>
       </div>
 
       {/* Side Information Panel: Exact 50% screen split (calc(50vw - 28px)), leaving 50% for planet */}

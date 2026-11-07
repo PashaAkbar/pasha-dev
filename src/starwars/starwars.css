@@ -1,0 +1,339 @@
+/* ─── Star Wars page ─── */
+.sw-page {
+  height: 100vh;
+  overflow-y: auto;
+  background: #000;
+  color: #ffe81f;
+  font-family: 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+  scroll-behavior: smooth;
+}
+
+/* ─── Opening crawl ─── */
+.sw-crawl {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sw-crawl-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.sw-intro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #4bd5ee;
+  font-size: clamp(20px, 3.2vw, 42px);
+  font-weight: 600;
+  text-align: center;
+  animation: sw-intro-fade 5.5s ease forwards;
+  pointer-events: none;
+}
+
+.sw-intro p {
+  margin: 4px 0;
+}
+
+@keyframes sw-intro-fade {
+  0% { opacity: 0; transform: scale(0.9); }
+  18% { opacity: 1; transform: scale(1); }
+  75% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.05); }
+}
+
+.sw-scroll-hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffe81f;
+  font-size: 13px;
+  letter-spacing: 0.25em;
+  animation: sw-bounce 1.6s ease-in-out infinite;
+  z-index: 5;
+}
+
+@keyframes sw-bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ─── Sections ─── */
+.sw-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  padding: 90px 24px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.sw-section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sw-chapter {
+  font-size: 14px;
+  letter-spacing: 0.5em;
+  color: #9aa0a6;
+  margin: 0;
+}
+
+.sw-title {
+  font-size: clamp(34px, 6vw, 68px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin: 0;
+  color: #ffe81f;
+  text-shadow: 0 0 30px rgba(255, 232, 31, 0.35);
+}
+
+.sw-copy {
+  max-width: 620px;
+  color: #c8cbd0;
+  font-size: clamp(14px, 1.6vw, 18px);
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* ─── Lightsabers ─── */
+.sw-saber-duel {
+  display: flex;
+  gap: 70px;
+  align-items: flex-end;
+  height: 340px;
+}
+
+.sw-saber {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sw-blade {
+  width: 12px;
+  height: 210px;
+  border-radius: 6px 6px 0 0;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.saber-blue .sw-blade {
+  background: linear-gradient(#fff, #7ec8ff 40%, #2f7fe0);
+  box-shadow: 0 0 18px #7ec8ff, 0 0 55px #2f7fe0;
+}
+
+.saber-red .sw-blade {
+  background: linear-gradient(#fff, #ff8a8a 40%, #e03b2f);
+  box-shadow: 0 0 18px #ff8a8a, 0 0 55px #e03b2f;
+}
+
+.sw-hilt {
+  width: 18px;
+  height: 56px;
+  background: linear-gradient(90deg, #6b6f76, #d9dde2 45%, #6b6f76);
+  border-radius: 4px;
+}
+
+.sw-section.in-view .sw-blade {
+  transform: scaleY(1);
+}
+
+.sw-section.in-view .saber-red .sw-saber,
+.sw-section.in-view .saber-red .sw-blade {
+  animation: sway 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes sway {
+  from { transform: rotate(-4deg); }
+  to { transform: rotate(6deg); }
+}
+
+/* ─── Grogu ─── */
+.sw-grogu {
+  width: clamp(200px, 30vw, 300px);
+  filter: drop-shadow(0 0 40px rgba(167, 211, 154, 0.25));
+}
+
+.sw-grogu-arm {
+  transform-box: fill-box;
+  transform-origin: 90% 95%;
+  transform: rotate(0deg);
+}
+
+.sw-section.in-view .sw-grogu-arm {
+  animation: wave 1.1s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(18deg); }
+  60% { transform: rotate(-26deg); }
+}
+
+/* ─── Fleet ─── */
+.sw-space {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 260px;
+  overflow: hidden;
+}
+
+.sw-xwing {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  display: flex;
+  align-items: center;
+}
+
+.sw-section.in-view .sw-xwing {
+  animation: flyby 7s linear infinite;
+}
+
+.sw-engine-trail {
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(126, 200, 255, 0.9), transparent);
+  box-shadow: 0 0 12px #7ec8ff;
+  margin-right: -10px;
+}
+
+@keyframes flyby {
+  from { transform: translateX(-260px); }
+  to { transform: translateX(1000px); }
+}
+
+.sw-tie {
+  position: absolute;
+  bottom: 30px;
+  right: 0;
+  opacity: 0.9;
+}
+
+.sw-section.in-view .sw-tie {
+  animation: flyby-rev 9s linear infinite;
+}
+
+@keyframes flyby-rev {
+  from { transform: translateX(300px); }
+  to { transform: translateX(-1100px); }
+}
+
+/* ─── Death Star ─── */
+.sw-deathstar {
+  position: relative;
+  width: min(340px, 70vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #8b9096, #4a4d52 55%, #17181b 90%);
+  box-shadow: inset -30px -40px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(139, 144, 150, 0.15);
+  overflow: hidden;
+}
+
+.sw-trench {
+  position: absolute;
+  top: 58%;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  transform: rotate(-8deg);
+}
+
+.sw-dish {
+  position: absolute;
+  top: 26%;
+  left: 18%;
+  width: 26%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, #6b6f76 30%, #33363b 70%);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+.sw-superlaser {
+  position: absolute;
+  top: 40%;
+  left: 30%;
+  width: 8px;
+  height: 0;
+  background: linear-gradient(#c8ffc8, #52ff52);
+  box-shadow: 0 0 24px #52ff52, 0 0 80px #2fd22f;
+  transform-origin: top center;
+  transform: rotate(38deg);
+  opacity: 0;
+}
+
+.sw-section.in-view .sw-superlaser {
+  animation: fire 4s ease-in-out infinite;
+}
+
+@keyframes fire {
+  0%, 55%, 100% { height: 0; opacity: 0; }
+  62% { height: 300px; opacity: 0.2; }
+  68% { height: 320px; opacity: 1; }
+  78% { height: 320px; opacity: 0.9; }
+  88% { height: 0; opacity: 0; }
+}
+
+/* ─── Footer ─── */
+.sw-footer {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.sw-may {
+  font-size: clamp(28px, 4.5vw, 52px);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  margin: 0;
+  animation: glow-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { text-shadow: 0 0 20px rgba(255, 232, 31, 0.4); }
+  50% { text-shadow: 0 0 55px rgba(255, 232, 31, 0.9); }
+}
+
+.sw-back {
+  color: #4bd5ee;
+  text-decoration: none;
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  border: 1px solid #1d5c6b;
+  padding: 12px 22px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.sw-back:hover {
+  background: rgba(75, 213, 238, 0.12);
+  border-color: #4bd5ee;
+}
+
+.sw-fineprint {
+  color: #54585e;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
