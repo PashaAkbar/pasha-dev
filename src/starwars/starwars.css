@@ -151,16 +151,6 @@
   transform: scaleY(1);
 }
 
-.sw-section.in-view .saber-red .sw-saber,
-.sw-section.in-view .saber-red .sw-blade {
-  animation: sway 2.4s ease-in-out infinite alternate;
-}
-
-@keyframes sway {
-  from { transform: rotate(-4deg); }
-  to { transform: rotate(6deg); }
-}
-
 /* ─── Grogu ─── */
 .sw-grogu {
   width: clamp(200px, 30vw, 300px);
