@@ -109,10 +109,12 @@
 
 /* ─── Lightsabers ─── */
 .sw-saber-duel {
+  position: relative;
   display: flex;
-  gap: 70px;
+  justify-content: center;
   align-items: flex-end;
-  height: 340px;
+  gap: 80px;
+  height: 400px;
 }
 
 .sw-saber {
@@ -121,9 +123,20 @@
   align-items: center;
 }
 
+/* Blades lean toward each other so they cross like a duel */
+.saber-blue {
+  transform: rotate(16deg);
+  transform-origin: bottom center;
+}
+
+.saber-red {
+  transform: rotate(-16deg);
+  transform-origin: bottom center;
+}
+
 .sw-blade {
   width: 12px;
-  height: 210px;
+  height: 250px;
   border-radius: 6px 6px 0 0;
   transform: scaleY(0);
   transform-origin: bottom;
@@ -149,6 +162,72 @@
 
 .sw-section.in-view .sw-blade {
   transform: scaleY(1);
+}
+
+/* ─── Blade clash: glowing contact point + flying sparks ─── */
+.sw-clash {
+  position: absolute;
+  left: 50%;
+  bottom: 195px;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.sw-clash::before {
+  content: '';
+  position: absolute;
+  inset: -36px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #ffffff 0%,
+    rgba(255, 255, 240, 0.95) 22%,
+    rgba(255, 232, 31, 0.45) 52%,
+    transparent 72%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease 0.7s;
+}
+
+.sw-section.in-view .sw-clash::before {
+  opacity: 1;
+  animation: clash-flicker 0.22s ease-in-out infinite alternate;
+}
+
+@keyframes clash-flicker {
+  from { transform: scale(1); }
+  to { transform: scale(1.3); }
+}
+
+.sw-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff8d6;
+  box-shadow: 0 0 10px #ffe81f, 0 0 22px rgba(255, 232, 31, 0.7);
+  opacity: 0;
+}
+
+.sw-section.in-view .sw-spark {
+  animation: spark-fly 1.1s ease-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes spark-fly {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, -50px))) scale(0.3);
+    opacity: 0;
+  }
 }
 
 /* ─── Grogu ─── */
