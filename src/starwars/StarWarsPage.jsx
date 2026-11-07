@@ -63,23 +63,23 @@ function Grogu() {
   );
 }
 
-// ─── MANDALORIAN: dot-art bust cradling Grogu, after the reference art ───
+// ─── MANDALORIAN: dot-art, cradling Grogu with blaster in the right hand ───
 function Mandalorian() {
   return (
-    <svg className="sw-mando sw-dots" viewBox="0 0 320 400" aria-label="Mandalorian holding Grogu, dot art">
+    <svg className="sw-mando sw-dots" viewBox="0 0 320 480" aria-label="Mandalorian holding Grogu and blaster, dot art">
       {/* cape flowing behind */}
-      <path d="M52 224 Q16 300 24 380" />
-      <path d="M208 224 Q254 300 246 380" />
-      <path d="M24 380 Q135 398 246 382" />
+      <path d="M52 224 Q14 310 22 440" />
+      <path d="M208 224 Q256 310 248 440" />
+      <path d="M22 440 Q135 458 248 442" />
 
       {/* helmet: wide squat dome */}
       <path d="M64 116 Q60 64 96 46 Q130 34 164 46 Q200 64 196 116 Q198 142 182 154 Q130 170 78 154 Q62 142 64 116 Z" />
       {/* top ridge */}
       <path d="M124 40 Q130 30 136 40" />
-      {/* T-visor: eye band on top, stem down to the chin */}
+      {/* T-visor: centered, eye band on top, stem down to the chin */}
       <path
         className="sw-visor"
-        d="M74 90 Q135 80 196 90 L192 108 Q160 114 142 114 L142 148 Q130 152 118 148 L118 114 Q100 114 78 108 Z"
+        d="M70 90 Q130 80 190 90 L186 108 Q158 114 142 114 L142 148 Q130 152 118 148 L118 114 Q102 114 74 108 Z"
       />
       {/* neck seal */}
       <path d="M108 166 L108 178 Q130 188 152 178 L152 166" />
@@ -93,7 +93,7 @@ function Mandalorian() {
       <path d="M130 190 L130 264" />
       <path d="M104 262 L156 262 L152 290 Q130 298 108 290 Z" />
 
-      {/* Grogu in the crook of the arm */}
+      {/* Grogu in the crook of the left arm */}
       <ellipse cx="186" cy="202" rx="40" ry="32" />
       <path d="M148 192 Q112 182 100 206 Q126 206 150 216 Z" />
       <path d="M224 192 Q260 182 272 206 Q246 206 222 216 Z" />
@@ -104,13 +104,35 @@ function Mandalorian() {
       <path d="M148 228 Q138 254 148 276 L224 276 Q234 250 222 228 Q186 242 148 228 Z" />
       <circle cx="212" cy="244" r="6" />
 
-      {/* arms cradling the child */}
-      <path d="M62 222 Q88 262 130 280" />
+      {/* left arm cradling the child */}
+      <path d="M62 222 Q90 264 140 282" />
       <path d="M92 230 Q106 254 126 266" />
-      <path d="M114 272 Q130 282 146 280" />
-      <path d="M208 222 Q204 272 152 288" />
-      <path d="M186 230 Q180 258 156 274" />
-      <path d="M168 278 Q152 286 138 284" />
+      <path d="M120 274 Q138 284 154 280" />
+
+      {/* right arm holding the blaster down at the side */}
+      <path d="M208 222 Q234 260 236 302" />
+      <path d="M184 230 Q198 262 208 296" />
+      <path d="M206 290 Q222 300 236 294" />
+      <circle cx="228" cy="310" r="12" />
+      {/* blaster pistol */}
+      <path className="sw-bold" d="M226 310 L232 308" />
+      <path className="sw-bold" d="M220 318 L218 382" />
+      <path className="sw-bold" d="M236 316 L234 380" />
+      <path className="sw-bold" d="M216 382 L238 381" />
+
+      {/* legs: thigh plates, knee pads, shins, boots */}
+      <path d="M108 292 Q102 336 106 380" />
+      <path d="M126 292 L125 380" />
+      <path d="M104 376 Q115 386 126 376" />
+      <path d="M106 382 L104 424" />
+      <path d="M125 380 L124 424" />
+      <path d="M98 424 L97 444 Q97 450 105 450 L128 450 Q134 450 134 444 L132 424" />
+      <path d="M148 292 Q156 336 152 380" />
+      <path d="M134 292 L135 380" />
+      <path d="M133 376 Q143 386 153 376" />
+      <path d="M135 380 L136 424" />
+      <path d="M152 380 L154 424" />
+      <path d="M130 424 L129 444 Q129 450 137 450 L160 450 Q166 450 166 444 L165 424" />
     </svg>
   );
 }
