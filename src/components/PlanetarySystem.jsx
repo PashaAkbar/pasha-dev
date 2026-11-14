@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { loadEarthLandMask, isLandAt } from '../utils/earthSampler';
+import { ParticleBody, fibonacciSphere, makeGlowTexture } from '../utils/particleEngine';
 import { PLANETS, PERSONAL_INFO } from '../data/portfolioData';
 
 export default function PlanetarySystem({
@@ -25,12 +26,17 @@ export default function PlanetarySystem({
     const el = mountRef.current;
     if (!el) return;
 
+    // Particle budget: phones get a lighter cloud so the springs stay at 60fps.
+    const PQ = el.clientWidth < 768 ? 0.45 : 1;
+    const pc = (n) => Math.max(48, Math.round(n * PQ));
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, el.clientWidth / el.clientHeight, 1, 4000);
     camera.position.set(0, 300, 600);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    // Soft round dots don't need MSAA, and additive dust is fill-rate bound.
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(el.clientWidth, el.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
     renderer.setClearColor(0x000000, 1);
     renderer.domElement.style.touchAction = 'none'; // let touch drag orbit instead of scrolling
     el.appendChild(renderer.domElement);
@@ -48,6 +54,7 @@ export default function PlanetarySystem({
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 32, 32);
     const dotTex = new THREE.CanvasTexture(c);
+    const glowTex = makeGlowTexture();
 
     // Starfield
     const sG = new THREE.BufferGeometry();
@@ -120,11 +127,71 @@ export default function PlanetarySystem({
       hit.userData = { planetId: cfg.id };
       group.add(hit);
 
+      let body = null;
+
       if (cfg.id === 'sun') {
-        // ─── SOL: Central Star with Coronal Flare Loops ───
+        // ─── SOL: Particle Star — dense dust core + 14 radial stellar flares ───
         const R = cfg.size;
-        group.add(makeDotSphere(R, 800, 0xcccccc, 0.7, 1.4));
-        group.add(makeDotSphere(R * 1.25, 250, 0x666666, 0.35, 1.2));
+        const coreCount = pc(3600);
+        const spikeCount = 14;
+        const perSpike = pc(70);
+        const flareCount = spikeCount * perSpike;
+
+        const targets = new Float32Array((coreCount + flareCount) * 3);
+        const colors = new Float32Array((coreCount + flareCount) * 3);
+
+        const core = fibonacciSphere(coreCount, R);
+        targets.set(core, 0);
+        for (let i = 0; i < coreCount; i++) {
+          const v = 0.55 + 0.4 * (1 - Math.abs(core[i * 3 + 1] / R));
+          colors[i * 3] = v;
+          colors[i * 3 + 1] = v * 0.93;
+          colors[i * 3 + 2] = v * 0.8;
+        }
+
+        let fi = coreCount;
+        for (let s = 0; s < spikeCount; s++) {
+          const sy = 1 - (s / (spikeCount - 1)) * 2;
+          const sr = Math.sqrt(Math.max(0, 1 - sy * sy));
+          const sth = GA * s;
+          const dx0 = Math.cos(sth) * sr;
+          const dy0 = sy;
+          const dz0 = Math.sin(sth) * sr;
+
+          for (let j = 0; j < perSpike; j++) {
+            const t = Math.pow(Math.random(), 0.75);
+            const spread = 0.5 * (1 - t * 0.7);
+            let dx = dx0 + (Math.random() - 0.5) * spread;
+            let dy = dy0 + (Math.random() - 0.5) * spread;
+            let dz = dz0 + (Math.random() - 0.5) * spread;
+            const len = Math.hypot(dx, dy, dz) || 1;
+            dx /= len;
+            dy /= len;
+            dz /= len;
+
+            const dist = R * (0.9 + t * 1.15);
+            targets[fi * 3] = dx * dist;
+            targets[fi * 3 + 1] = dy * dist;
+            targets[fi * 3 + 2] = dz * dist;
+
+            const v = 0.45 + 0.55 * t;
+            colors[fi * 3] = v;
+            colors[fi * 3 + 1] = v * 0.92;
+            colors[fi * 3 + 2] = v * 0.75;
+            fi++;
+          }
+        }
+
+        body = new ParticleBody({
+          count: coreCount + flareCount,
+          targets,
+          colors,
+          texture: dotTex,
+          radius: R,
+          size: 0.95,
+          opacity: 0.75,
+        });
+        group.add(body.points);
 
         // 3 Arching Coronal Solar Flare Loops (Prominences)
         for (let loopIdx = 0; loopIdx < 3; loopIdx++) {
@@ -152,10 +219,10 @@ export default function PlanetarySystem({
       } else if (cfg.id === 'mars') {
         // ─── MARS: Prominent Ice Caps + Olympus Mons Caldera + Valles Marineris + Phobos & Deimos with Orbit Tracks ───
         const R = cfg.size;
-        const mGeo = new THREE.BufferGeometry();
-        const mPos = [];
-        const mCols = [];
-        const count = 1100;
+        const count = pc(6000);
+        const mPos = new Float32Array(count * 3);
+        const mCols = new Float32Array(count * 3);
+        let mCount = 0;
 
         for (let i = 0; i < count; i++) {
           const y = 1 - (i / (count - 1)) * 2;
@@ -173,28 +240,32 @@ export default function PlanetarySystem({
           const isCanyon = Math.abs(y) < 0.1 && lon > -1.5 && lon < -0.4;
 
           if (!isCanyon) {
-            mPos.push(x * R, y * R, z * R);
+            mPos[mCount * 3] = x * R;
+            mPos[mCount * 3 + 1] = y * R;
+            mPos[mCount * 3 + 2] = z * R;
             if (isNorthPole || isSouthPole) {
-              mCols.push(0.9, 0.9, 0.95); // Bright white polar caps
+              mCols[mCount * 3] = 0.9;
+              mCols[mCount * 3 + 1] = 0.9;
+              mCols[mCount * 3 + 2] = 0.95; // Bright white polar caps
             } else {
-              mCols.push(0.24, 0.22, 0.22); // Darker terrain
+              mCols[mCount * 3] = 0.26;
+              mCols[mCount * 3 + 1] = 0.21;
+              mCols[mCount * 3 + 2] = 0.2; // Darker rust terrain
             }
+            mCount++;
           }
         }
-        mGeo.setAttribute('position', new THREE.Float32BufferAttribute(mPos, 3));
-        mGeo.setAttribute('color', new THREE.Float32BufferAttribute(mCols, 3));
-        const marsPts = new THREE.Points(
-          mGeo,
-          new THREE.PointsMaterial({
-            size: 1.15,
-            vertexColors: true,
-            map: dotTex,
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false,
-          })
-        );
-        group.add(marsPts);
+
+        body = new ParticleBody({
+          count: mCount,
+          targets: mPos.subarray(0, mCount * 3),
+          colors: mCols.subarray(0, mCount * 3),
+          texture: dotTex,
+          radius: R,
+          size: 0.72,
+          opacity: 0.26,
+        });
+        group.add(body.points);
 
         // Olympus Mons (Giant Shield Volcano Caldera): elevated concentric crater cone
         const volcanoGroup = new THREE.Group();
@@ -243,10 +314,9 @@ export default function PlanetarySystem({
       } else if (cfg.id === 'jupiter') {
         // ─── JUPITER: Distinct Horizontal Zebra Cloud Belts + Swirling Great Red Spot + 4 Galilean Moons ───
         const R = cfg.size;
-        const jGeo = new THREE.BufferGeometry();
-        const jPos = [];
-        const jCols = [];
-        const count = 2200;
+        const count = pc(9000);
+        const jPos = new Float32Array(count * 3);
+        const jCols = new Float32Array(count * 3);
 
         for (let i = 0; i < count; i++) {
           const y = 1 - (i / (count - 1)) * 2;
@@ -265,31 +335,36 @@ export default function PlanetarySystem({
           const lon = Math.atan2(z, x);
           const inGRS = Math.abs(lat - -0.38) < 0.14 && Math.abs(lon - 1.1) < 0.32;
 
-          jPos.push(x * R, y * R, z * R);
+          // Slight polar flattening so the cloud belts read as a gas giant
+          jPos[i * 3] = x * R * 1.02;
+          jPos[i * 3 + 1] = y * R * 0.94;
+          jPos[i * 3 + 2] = z * R * 1.02;
 
           if (inGRS) {
-            jCols.push(0.95, 0.85, 0.75); // Bright swirling spot core
+            jCols[i * 3] = 0.95;
+            jCols[i * 3 + 1] = 0.85;
+            jCols[i * 3 + 2] = 0.75; // Bright swirling spot core
           } else if (isBrightStripe) {
-            jCols.push(0.55, 0.55, 0.58); // Distinct light zone
+            jCols[i * 3] = 0.55;
+            jCols[i * 3 + 1] = 0.55;
+            jCols[i * 3 + 2] = 0.58; // Distinct light zone
           } else {
-            jCols.push(0.12, 0.12, 0.14); // Dark cloud belt
+            jCols[i * 3] = 0.13;
+            jCols[i * 3 + 1] = 0.12;
+            jCols[i * 3 + 2] = 0.14; // Dark cloud belt
           }
         }
 
-        jGeo.setAttribute('position', new THREE.Float32BufferAttribute(jPos, 3));
-        jGeo.setAttribute('color', new THREE.Float32BufferAttribute(jCols, 3));
-        const jupiterPts = new THREE.Points(
-          jGeo,
-          new THREE.PointsMaterial({
-            size: 1.15,
-            vertexColors: true,
-            map: dotTex,
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false,
-          })
-        );
-        group.add(jupiterPts);
+        body = new ParticleBody({
+          count,
+          targets: jPos,
+          colors: jCols,
+          texture: dotTex,
+          radius: R,
+          size: 0.68,
+          opacity: 0.26,
+        });
+        group.add(body.points);
 
         // 4 Galilean Moons with visible dotted orbit tracks (Io, Europa, Ganymede, Callisto)
         const moonDists = [R * 1.5, R * 2.1, R * 2.8, R * 3.6];
@@ -309,93 +384,136 @@ export default function PlanetarySystem({
       } else if (cfg.id === 'saturn') {
         // ─── SATURN: Oblate Spheroid (Flattened) + Dual Rings with Cassini Division (User Favorite) ───
         const R = cfg.size;
-        const sGeo = new THREE.BufferGeometry();
-        const sPos = [];
-        const count = 1400;
+        const bodyCount = pc(7000);
+        const ringBCount = pc(1200);
+        const ringACount = pc(900);
+        const total = bodyCount + ringBCount + ringACount;
+        const sPos = new Float32Array(total * 3);
+        const sCols = new Float32Array(total * 3);
 
-        for (let i = 0; i < count; i++) {
-          const y = 1 - (i / (count - 1)) * 2;
+        for (let i = 0; i < bodyCount; i++) {
+          const y = 1 - (i / (bodyCount - 1)) * 2;
           const rY = Math.sqrt(1 - y * y);
           const th = GA * i;
           // Oblate flattening: polar y compressed to 0.88, equatorial expanded to 1.03
-          sPos.push(Math.cos(th) * rY * R * 1.03, y * R * 0.88, Math.sin(th) * rY * R * 1.03);
+          sPos[i * 3] = Math.cos(th) * rY * R * 1.03;
+          sPos[i * 3 + 1] = y * R * 0.88;
+          sPos[i * 3 + 2] = Math.sin(th) * rY * R * 1.03;
+          const v = 0.32 + 0.22 * (1 - Math.abs(y));
+          sCols[i * 3] = v * 1.02;
+          sCols[i * 3 + 1] = v;
+          sCols[i * 3 + 2] = v * 0.94;
         }
-        sGeo.setAttribute('position', new THREE.Float32BufferAttribute(sPos, 3));
-        const saturnBody = new THREE.Points(
-          sGeo,
-          new THREE.PointsMaterial({
-            color: 0x999999,
-            size: 1.1,
-            map: dotTex,
-            transparent: true,
-            opacity: 0.55,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false,
-          })
-        );
-        group.add(saturnBody);
 
-        // Grand Dual Rings with Cassini Division
-        const ringGeo = new THREE.BufferGeometry();
-        const ringPos = [];
-        const ringCols = [];
+        // Grand Dual Rings with Cassini Division, baked into the same dust cloud
+        // (26.7 degree axial tilt) and counted as particles like everything else.
+        const ringTilt = new THREE.Euler(0.46, 0, 0.1);
+        const rv = new THREE.Vector3();
+        let ri = bodyCount;
 
         // Ring B (inner, dense): 1.42R to 1.9R
-        for (let i = 0; i < 280; i++) {
-          const a = (i / 280) * Math.PI * 2 + Math.random() * 0.02;
+        for (let i = 0; i < ringBCount; i++) {
+          const a = (i / ringBCount) * Math.PI * 2 + Math.random() * 0.02;
           const rad = R * 1.42 + Math.random() * (R * 0.48);
-          ringPos.push(Math.cos(a) * rad, (Math.random() - 0.5) * 0.3, Math.sin(a) * rad);
-          ringCols.push(0.5, 0.5, 0.52);
+          rv.set(Math.cos(a) * rad, (Math.random() - 0.5) * 0.3, Math.sin(a) * rad).applyEuler(ringTilt);
+          sPos[ri * 3] = rv.x;
+          sPos[ri * 3 + 1] = rv.y;
+          sPos[ri * 3 + 2] = rv.z;
+          sCols[ri * 3] = 0.5;
+          sCols[ri * 3 + 1] = 0.5;
+          sCols[ri * 3 + 2] = 0.52;
+          ri++;
         }
 
         // Cassini division gap (1.9R - 2.08R is empty)
 
         // Ring A (outer): 2.08R to 2.55R
-        for (let i = 0; i < 220; i++) {
-          const a = (i / 220) * Math.PI * 2 + Math.random() * 0.02;
+        for (let i = 0; i < ringACount; i++) {
+          const a = (i / ringACount) * Math.PI * 2 + Math.random() * 0.02;
           const rad = R * 2.08 + Math.random() * (R * 0.45);
-          ringPos.push(Math.cos(a) * rad, (Math.random() - 0.5) * 0.3, Math.sin(a) * rad);
-          ringCols.push(0.35, 0.35, 0.38);
+          rv.set(Math.cos(a) * rad, (Math.random() - 0.5) * 0.3, Math.sin(a) * rad).applyEuler(ringTilt);
+          sPos[ri * 3] = rv.x;
+          sPos[ri * 3 + 1] = rv.y;
+          sPos[ri * 3 + 2] = rv.z;
+          sCols[ri * 3] = 0.35;
+          sCols[ri * 3 + 1] = 0.35;
+          sCols[ri * 3 + 2] = 0.38;
+          ri++;
         }
 
-        ringGeo.setAttribute('position', new THREE.Float32BufferAttribute(ringPos, 3));
-        ringGeo.setAttribute('color', new THREE.Float32BufferAttribute(ringCols, 3));
-
-        const dualRings = new THREE.Points(
-          ringGeo,
-          new THREE.PointsMaterial({
-            size: 1.05,
-            vertexColors: true,
-            map: dotTex,
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false,
-          })
-        );
-        dualRings.rotation.x = 0.46; // 26.7 degree axial ring tilt
-        dualRings.rotation.z = 0.1;
-        group.add(dualRings);
+        body = new ParticleBody({
+          count: total,
+          targets: sPos,
+          colors: sCols,
+          texture: dotTex,
+          radius: R * 1.6,
+          size: 0.68,
+          opacity: 0.26,
+        });
+        group.add(body.points);
       } else if (cfg.id === 'neptune') {
         // ─── NEPTUNE: Tilted Narrow Rings (Adams/Le Verrier) + Pulsing Beacon Waves + Triton Moon ───
         const R = cfg.size;
-        group.add(makeDotSphere(R, 850, 0x8899aa, 0.55, 1.15));
+        const nBodyCount = pc(4500);
+        const nRingCount = pc(800);
+        const nTotal = nBodyCount + nRingCount;
+        const nPos = new Float32Array(nTotal * 3);
+        const nCols = new Float32Array(nTotal * 3);
 
-        // Tilted Narrow Ring System (Neptune's famous delicate rings, tilted at 30 deg)
-        const nRingGeo = new THREE.BufferGeometry();
-        const nRingPos = [];
-        for (let i = 0; i < 180; i++) {
-          const a = (i / 180) * Math.PI * 2;
-          const rad = R * 1.55 + Math.random() * 0.4;
-          nRingPos.push(Math.cos(a) * rad, (Math.random() - 0.5) * 0.2, Math.sin(a) * rad);
+        for (let i = 0; i < nBodyCount; i++) {
+          const y = 1 - (i / (nBodyCount - 1)) * 2;
+          const rY = Math.sqrt(1 - y * y);
+          const th = GA * i;
+          const x = Math.cos(th) * rY;
+          const z = Math.sin(th) * rY;
+
+          nPos[i * 3] = x * R;
+          nPos[i * 3 + 1] = y * R;
+          nPos[i * 3 + 2] = z * R;
+
+          // Great Dark Spot + faint equatorial banding
+          const lat = Math.asin(y);
+          const lon = Math.atan2(z, x);
+          const inSpot = Math.abs(lat + 0.32) < 0.18 && Math.abs(lon - 1.05) < 0.42;
+          const band = 0.5 + 0.1 * Math.sin(lat * 7);
+
+          if (inSpot) {
+            nCols[i * 3] = 0.18;
+            nCols[i * 3 + 1] = 0.22;
+            nCols[i * 3 + 2] = 0.3;
+          } else {
+            nCols[i * 3] = band * 0.95;
+            nCols[i * 3 + 1] = band * 1.04;
+            nCols[i * 3 + 2] = band * 1.14;
+          }
         }
-        nRingGeo.setAttribute('position', new THREE.Float32BufferAttribute(nRingPos, 3));
-        const nRing = new THREE.Points(
-          nRingGeo,
-          new THREE.PointsMaterial({ color: 0x7799aa, size: 1.0, map: dotTex, transparent: true, opacity: 0.45 })
-        );
-        nRing.rotation.x = 0.52; // Tilted ring
-        nRing.rotation.z = 0.2;
-        group.add(nRing);
+
+        // Tilted Narrow Ring System (Adams / Le Verrier), tilted ~30 deg
+        const nRingTilt = new THREE.Euler(0.52, 0, 0.2);
+        const nrv = new THREE.Vector3();
+        for (let i = 0; i < nRingCount; i++) {
+          const a = (i / nRingCount) * Math.PI * 2;
+          const rad = R * 1.55 + Math.random() * 0.4;
+          nrv.set(Math.cos(a) * rad, (Math.random() - 0.5) * 0.2, Math.sin(a) * rad).applyEuler(nRingTilt);
+          const i3 = (nBodyCount + i) * 3;
+          nPos[i3] = nrv.x;
+          nPos[i3 + 1] = nrv.y;
+          nPos[i3 + 2] = nrv.z;
+          nCols[i3] = 0.47;
+          nCols[i3 + 1] = 0.6;
+          nCols[i3 + 2] = 0.67;
+        }
+
+        body = new ParticleBody({
+          count: nTotal,
+          targets: nPos,
+          colors: nCols,
+          texture: dotTex,
+          radius: R * 1.4,
+          size: 0.65,
+          opacity: 0.26,
+        });
+        group.add(body.points);
 
         // Animated Beacon Radar Transmission Wave Circles (expanding outward)
         const waveRings = [];
@@ -443,13 +561,29 @@ export default function PlanetarySystem({
         scene.add(new THREE.Line(oG, new THREE.LineBasicMaterial({ color: 0x3c3c3c })));
       }
 
-      map[cfg.id] = { group, hit, config: cfg };
+      if (body) {
+        // Soft dust halo so each cloud reads as glowing matter rather than flat dots
+        const glow = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            map: glowTex,
+            color: new THREE.Color(cfg.glowColor),
+            transparent: true,
+            opacity: cfg.id === 'sun' ? 0.16 : 0.09,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          })
+        );
+        glow.scale.setScalar(cfg.size * (cfg.id === 'sun' ? 4.2 : 3.4));
+        group.add(glow);
+      }
+
+      map[cfg.id] = { group, hit, config: cfg, body };
     });
 
     // ─── EARTH: Bright Land Continents over Faint Ocean Dots (islands clearly visible) ───
     const ER = PLANETS.find((p) => p.id === 'earth').size;
     const eGroup = map.earth.group;
-    const NE = 20000; // Dense enough for readable coastlines, still airy
+    const NE = pc(20000); // Dense enough for readable coastlines, still airy
     const ePos = new Float32Array(NE * 3);
     const eCol = new Float32Array(NE * 3);
 
@@ -465,29 +599,25 @@ export default function PlanetarySystem({
       eCol[i * 3 + 2] = 0.14;
     }
 
-    const eGeo = new THREE.BufferGeometry();
-    eGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
-    eGeo.setAttribute('color', new THREE.BufferAttribute(eCol, 3));
-    eGroup.add(
-      new THREE.Points(
-        eGeo,
-        new THREE.PointsMaterial({
-          size: 1.1,
-          vertexColors: true,
-          map: dotTex,
-          transparent: true,
-          opacity: 0.75,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false,
-        })
-      )
-    );
+    const earthBody = new ParticleBody({
+      count: NE,
+      targets: ePos,
+      colors: eCol,
+      texture: dotTex,
+      radius: ER,
+      size: 0.9,
+      opacity: 0.62,
+    });
+    eGroup.add(earthBody.points);
     eGroup.rotation.z = 0.41;
+    map.earth.body = earthBody;
 
     loadEarthLandMask().then((md) => {
       if (!md) return;
-      const pA = eGeo.getAttribute('position');
-      const cA = eGeo.getAttribute('color');
+      const landPos = new Float32Array(NE * 3);
+      const landCol = new Float32Array(NE * 3);
+      const landMask = new Uint8Array(NE);
+
       for (let i = 0; i < NE; i++) {
         const y = 1 - (i / (NE - 1)) * 2;
         const rY = Math.sqrt(1 - y * y);
@@ -500,17 +630,26 @@ export default function PlanetarySystem({
         const v = (90 - lat) / 180;
 
         if (isLandAt(u, v, md)) {
-          // Land: bright white dots forming visible continents & islands
-          pA.setXYZ(i, x * ER, y * ER, z * ER);
-          cA.setXYZ(i, 0.95, 0.95, 0.97);
+          // Land: bright white dust forming visible continents & islands
+          landPos[i * 3] = x * ER;
+          landPos[i * 3 + 1] = y * ER;
+          landPos[i * 3 + 2] = z * ER;
+          landCol[i * 3] = 0.95;
+          landCol[i * 3 + 1] = 0.95;
+          landCol[i * 3 + 2] = 0.97;
+          landMask[i] = 1;
         } else {
-          // Ocean: black transparent (invisible with additive blending)
-          pA.setXYZ(i, x * ER * 0.996, y * ER * 0.996, z * ER * 0.996);
-          cA.setXYZ(i, 0, 0, 0);
+          // Ocean: stays put and goes black (invisible with additive blending)
+          landPos[i * 3] = x * ER * 0.996;
+          landPos[i * 3 + 1] = y * ER * 0.996;
+          landPos[i * 3 + 2] = z * ER * 0.996;
+          landMask[i] = 0;
         }
       }
-      pA.needsUpdate = true;
-      cA.needsUpdate = true;
+
+      earthBody.setMask(landMask);
+      earthBody.setColors(landCol, { instant: true });
+      earthBody.setTargets(landPos, { peelSeconds: 0.7 });
     });
 
     // Interaction Handlers
@@ -523,6 +662,7 @@ export default function PlanetarySystem({
     let orbitA = 0;
     let pitch = 0.4;
     let dist = 650;
+    let hoveredId = null;
     const lookAt = new THREE.Vector3();
     const hits = Object.values(map).map((p) => p.hit);
 
@@ -533,6 +673,7 @@ export default function PlanetarySystem({
 
     const onDown = (e) => {
       setHovered(null);
+      hoveredId = null;
       setMouseFromEvent(e); // taps never fire a preceding pointermove
       drag = true;
       prev = { x: e.clientX, y: e.clientY };
@@ -550,12 +691,14 @@ export default function PlanetarySystem({
       // ignore hover raycasts that start over UI overlays
       if (e.target !== renderer.domElement) {
         setHovered(null);
+        hoveredId = null;
         el.style.cursor = 'default';
         return;
       }
       setMouseFromEvent(e);
       rc.setFromCamera(mouse, camera);
       const h = rc.intersectObjects(hits);
+      hoveredId = h.length ? h[0].object.userData.planetId : null;
       setHovered(h.length ? PLANETS.find((p) => p.id === h[0].object.userData.planetId) : null);
       el.style.cursor = h.length ? 'pointer' : 'default';
     };
@@ -589,11 +732,50 @@ export default function PlanetarySystem({
 
     // Animation Loop
     const clock = new THREE.Clock();
+    const WORLD_UP = new THREE.Vector3(0, 1, 0);
+    const tmpView = new THREE.Vector3();
+    const tmpRight = new THREE.Vector3();
+    const tmpUp = new THREE.Vector3();
+    const tmpCenter = new THREE.Vector3();
+    const tmpClosest = new THREE.Vector3();
+    const tmpDir = new THREE.Vector3();
+    const tmpSurface = new THREE.Vector3();
     let raf;
+    let lastActive = null;
+    let frame = 0;
+    let probeFrames = 0;
+    let probeTime = 0;
+    let didScale = false;
+    let lastNow = performance.now();
+    const views = Object.values(map);
 
     const animate = () => {
       raf = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
+      const dt = Math.min(clock.getDelta(), 1 / 30);
+      const t = clock.elapsedTime;
+      frame++;
+
+      // If the GPU can't hold ~45fps, drop to native resolution once.
+      const now = performance.now();
+      if (frame > 60 && !didScale) {
+        probeTime += now - lastNow;
+        probeFrames++;
+        if (probeFrames >= 90) {
+          if (probeTime / probeFrames > 22) {
+            renderer.setPixelRatio(1);
+            renderer.setSize(el.clientWidth, el.clientHeight);
+          }
+          didScale = true;
+        }
+      }
+      lastNow = now;
+
+      const activeId = activeRef.current;
+      if (activeId !== lastActive) {
+        lastActive = activeId;
+        const target = map[activeId];
+        if (target && target.body) target.body.rematerialize(1);
+      }
 
       // Orbit planets
       PLANETS.forEach((cfg) => {
@@ -649,20 +831,25 @@ export default function PlanetarySystem({
 
           // Camera offset: position camera in front of the planet
           tP.copy(wp).add(new THREE.Vector3(0, fd * 0.25, fd));
+          tL.copy(wp);
 
           if (isDetail) {
+            // Shift the aim in SCREEN space (not world X) so the planet stays
+            // centred in the visible half no matter where it sits in its orbit.
+            const dCam = tP.distanceTo(wp);
+            const halfH = dCam * Math.tan((camera.fov * Math.PI) / 360);
+            const halfW = halfH * camera.aspect;
+            const viewDir = tmpView.subVectors(tL, tP).normalize();
+            const rightDir = tmpRight.crossVectors(viewDir, WORLD_UP).normalize();
+            const screenUp = tmpUp.crossVectors(rightDir, viewDir).normalize();
+
             if (narrow) {
-              // Mobile: the panel covers the lower screen — look below the planet
-              // so it sits in the upper half
-              tL.copy(wp).add(new THREE.Vector3(0, -fd * 0.3, 0));
+              // Mobile: the panel covers the lower screen — aim below the planet
+              tL.addScaledVector(screenUp, -halfH * 0.7);
             } else {
-              // 50% / 50% Split Screen:
-              // Center the planet in the LEFT 50% of the screen by shifting lookAt to the right
-              // by approx 25% of visible frustum width (~fd * 0.26)
-              tL.copy(wp).add(new THREE.Vector3(fd * 0.26, 0, 0));
+              // Planet centred in the LEFT 50% of the viewport (25% from the left edge)
+              tL.addScaledVector(rightDir, halfW * 0.5);
             }
-          } else {
-            tL.copy(wp);
           }
         }
       }
@@ -670,6 +857,38 @@ export default function PlanetarySystem({
       camera.position.lerp(tP, 0.045);
       lookAt.lerp(tL, 0.045);
       camera.lookAt(lookAt);
+      camera.updateMatrixWorld();
+
+      // ─── Dust spring simulation + cursor scatter ───
+      rc.setFromCamera(mouse, camera);
+      views.forEach((o) => {
+        if (!o.body) return;
+
+        // Only the planet being looked at (or hovered / morphing) needs the full
+        // spring solve; distant idle dust refreshes at a quarter of the rate.
+        const live = o.config.id === activeId || o.config.id === hoveredId || o.body.morphing;
+        if (!live && (frame & 3) !== 0) return;
+
+        if (o.config.id === hoveredId) {
+          o.group.updateWorldMatrix(true, false);
+          o.group.getWorldPosition(tmpCenter);
+          rc.ray.closestPointToPoint(tmpCenter, tmpClosest);
+          if (tmpClosest.distanceTo(tmpCenter) < o.config.size * 2.4) {
+            tmpDir.subVectors(tmpClosest, tmpCenter);
+            if (tmpDir.lengthSq() < 1e-6) tmpDir.set(0, 0, 1);
+            else tmpDir.normalize();
+            tmpSurface.copy(tmpCenter).addScaledVector(tmpDir, o.config.size);
+            o.group.worldToLocal(tmpSurface);
+            o.body.setCursor(tmpSurface, o.config.size * 0.9, o.config.size * 420);
+          } else {
+            o.body.setCursor(null);
+          }
+        } else {
+          o.body.setCursor(null);
+        }
+
+        o.body.update(dt);
+      });
 
       renderer.render(scene, camera);
     };
