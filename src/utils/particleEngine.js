@@ -52,7 +52,17 @@ export function fibonacciSphere(count, radius, { squashY = 1 } = {}) {
  * from the particle-motion-video skill, running live in Three.js.
  */
 export class ParticleBody {
-  constructor({ count, targets, colors, texture, radius = 1, size = 1.2, opacity = 0.9 }) {
+  constructor({
+    count,
+    targets,
+    colors,
+    texture,
+    radius = 1,
+    size = 1.2,
+    opacity = 0.9,
+    sizeAttenuation = true,
+    blending = THREE.AdditiveBlending,
+  }) {
     this.count = count;
     this.radius = radius;
     this.pos = new Float32Array(count * 3);
@@ -92,9 +102,9 @@ export class ParticleBody {
       vertexColors: true,
       transparent: true,
       opacity,
-      blending: THREE.AdditiveBlending,
+      blending,
       depthWrite: false,
-      sizeAttenuation: true,
+      sizeAttenuation,
     });
 
     this.points = new THREE.Points(this.geometry, this.material);
