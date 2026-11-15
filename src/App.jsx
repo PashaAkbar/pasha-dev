@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PlanetarySystem from './components/PlanetarySystem';
 import { PLANETS, PERSONAL_INFO, PROJECTS, TOOLS, EXPERIENCES } from './data/portfolioData';
 import { GithubIcon, LinkedinIcon } from './components/SocialIcons';
+import ThemeMenu from './components/ThemeMenu';
 
 function SectionContent({ id, onNav }) {
   if (id === 'sun') {
@@ -526,7 +527,7 @@ export default function App() {
           justifyContent: 'space-between',
           alignItems: 'center',
           pointerEvents: 'none',
-          zIndex: 20,
+          zIndex: 30,
         }}
       >
         <div style={{ pointerEvents: 'auto', cursor: 'pointer', maxWidth: isMobile ? '48vw' : undefined }} onClick={() => setActive('sun')}>
@@ -539,24 +540,9 @@ export default function App() {
         </div>
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <a
-            href="#/starwars"
-            style={{
-              pointerEvents: 'auto',
-              padding: isMobile ? '5px 8px' : '6px 14px',
-              background: 'rgba(10, 10, 10, 0.85)',
-              border: '1px solid #222',
-              borderRadius: 6,
-              color: '#FFE81F',
-              fontSize: isMobile ? 8 : 10,
-              cursor: 'pointer',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            ★ STAR WARS
-          </a>
+          <div style={{ pointerEvents: 'auto' }}>
+            <ThemeMenu current="planetary" variant="dark" />
+          </div>
           <button
             onClick={() => setActive('sun')}
             style={{

@@ -1,0 +1,185 @@
+/* ─── Theme switcher (shared across all three themes) ─── */
+.tm {
+  position: relative;
+  display: inline-block;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  z-index: 60;
+}
+
+.tm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+}
+
+.tm-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.tm-caret {
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+.tm-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tm-menu-title {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  padding: 4px 8px 6px;
+}
+
+.tm-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.tm-item-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.tm-item-hint {
+  font-size: 10px;
+  opacity: 0.55;
+}
+
+/* ─── Variant: dark (planetary page) ─── */
+.tm-dark .tm-btn {
+  padding: 6px 12px;
+  background: rgba(10, 10, 10, 0.85);
+  border: 1px solid #222;
+  border-radius: 6px;
+  color: #ccc;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.tm-dark .tm-btn:hover {
+  border-color: #555;
+  color: #fff;
+}
+
+.tm-dark .tm-menu {
+  background: rgba(8, 8, 8, 0.97);
+  border: 1px solid #262626;
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+.tm-dark .tm-item {
+  color: #bbb;
+}
+
+.tm-dark .tm-item:hover {
+  background: #171717;
+  color: #fff;
+}
+
+.tm-dark .tm-item.is-active {
+  background: #1d1d1d;
+  color: #fff;
+}
+
+/* ─── Variant: yellow (Star Wars page) ─── */
+.tm-yellow .tm-btn {
+  padding: 6px 12px;
+  background: rgba(6, 6, 6, 0.9);
+  border: 1px solid #3a3200;
+  border-radius: 6px;
+  color: #ffe81f;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tm-yellow .tm-btn:hover {
+  border-color: #ffe81f;
+}
+
+.tm-yellow .tm-menu {
+  background: #060606;
+  border: 1px solid #3a3200;
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+}
+
+.tm-yellow .tm-item {
+  color: #c9c39a;
+}
+
+.tm-yellow .tm-item:hover,
+.tm-yellow .tm-item.is-active {
+  background: #151203;
+  color: #ffe81f;
+}
+
+/* ─── Variant: brutal (Neo Brutalism page) ─── */
+.tm-brutal .tm-btn {
+  padding: 8px 14px;
+  background: #ffe500;
+  border: 3px solid #0b0b0b;
+  box-shadow: 4px 4px 0 #0b0b0b;
+  color: #0b0b0b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tm-brutal .tm-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #0b0b0b;
+}
+
+.tm-brutal .tm-menu {
+  background: #fffdf5;
+  border: 3px solid #0b0b0b;
+  box-shadow: 6px 6px 0 #0b0b0b;
+  border-radius: 0;
+  padding: 6px;
+}
+
+.tm-brutal .tm-menu-title {
+  color: #0b0b0b;
+  font-weight: 900;
+}
+
+.tm-brutal .tm-item {
+  border-radius: 0;
+  border: 2px solid transparent;
+  color: #0b0b0b;
+}
+
+.tm-brutal .tm-item:hover {
+  background: #ffe500;
+  border-color: #0b0b0b;
+}
+
+.tm-brutal .tm-item.is-active {
+  background: #00e0ff;
+  border-color: #0b0b0b;
+}
